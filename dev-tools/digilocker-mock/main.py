@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 import fixtures
 import store
@@ -39,7 +40,6 @@ async def mock_reset():
 async def mock_token_direct(body: dict):
     persona_id = body.get("persona_id")
     if not persona_id:
-        from fastapi.responses import JSONResponse
         return JSONResponse(
             status_code=400,
             content={"error": "missing_persona_id", "error_description": "persona_id is required"},
@@ -47,7 +47,6 @@ async def mock_token_direct(body: dict):
 
     persona = fixtures.get_persona(persona_id)
     if not persona:
-        from fastapi.responses import JSONResponse
         return JSONResponse(
             status_code=404,
             content={"error": "not_found", "error_description": f"No persona with id '{persona_id}'"},

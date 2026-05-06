@@ -1,10 +1,11 @@
 import base64
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 import store
@@ -13,6 +14,14 @@ from config import settings
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
+
+
+def _validate_redirect_uri(redirect_uri: str | None) -> bool:
+    """Allow only http:// and https:// redirect URIs to prevent open redirect attacks."""
+    if not redirect_uri:
+        return False
+    parsed = urlparse(redirect_uri)
+    return parsed.scheme in ("http", "https") and bool(parsed.netloc)
 
 
 def _verify_client(client_id: str | None, client_secret: str | None, request: Request) -> bool:
@@ -45,29 +54,27 @@ async def authorize(
     code_challenge: str = None,
     code_challenge_method: str = None,
 ):
+    # Validate redirect_uri before anything else
+    if not _validate_redirect_uri(redirect_uri):
+        raise HTTPException(status_code=400, detail="redirect_uri is missing or has an invalid scheme")
+
     # Validate client_id
     if client_id != settings.CLIENT_ID:
-        if redirect_uri:
-            return RedirectResponse(
-                f"{redirect_uri}?error=unauthorized_client&state={state}"
-            )
-        raise HTTPException(status_code=400, detail="unauthorized_client")
+        return RedirectResponse(
+            f"{redirect_uri}?error=unauthorized_client&state={state}"
+        )
 
     # Validate response_type
     if response_type != "code":
-        if redirect_uri:
-            return RedirectResponse(
-                f"{redirect_uri}?error=unsupported_response_type&state={state}"
-            )
-        raise HTTPException(status_code=400, detail="unsupported_response_type")
+        return RedirectResponse(
+            f"{redirect_uri}?error=unsupported_response_type&state={state}"
+        )
 
     # Validate PKCE if enforced
     if settings.ENFORCE_PKCE and not code_challenge:
-        if redirect_uri:
-            return RedirectResponse(
-                f"{redirect_uri}?error=invalid_request&error_description=code_challenge+required&state={state}"
-            )
-        raise HTTPException(status_code=400, detail="code_challenge required")
+        return RedirectResponse(
+            f"{redirect_uri}?error=invalid_request&error_description=code_challenge+required&state={state}"
+        )
 
     persona_list = fixtures.list_personas()
 
@@ -98,6 +105,8 @@ async def authorize_callback(
     action: str = Form("authorize"),
 ):
     if action == "deny":
+        if not _validate_redirect_uri(redirect_uri):
+            raise HTTPException(status_code=400, detail="Invalid redirect_uri")
         return RedirectResponse(
             f"{redirect_uri}?error=access_denied&error_description=User+denied+access&state={state}",
             status_code=302,
@@ -108,12 +117,15 @@ async def authorize_callback(
     if not persona:
         raise HTTPException(status_code=400, detail="Unknown persona_id")
 
+    if not _validate_redirect_uri(redirect_uri):
+        raise HTTPException(status_code=400, detail="Invalid redirect_uri")
+
     code = secrets.token_hex(20)
     store.auth_codes[code] = {
         "persona_id": persona_id,
         "redirect_uri": redirect_uri,
         "code_challenge": code_challenge,
-        "expires_at": datetime.utcnow() + timedelta(seconds=300),
+        "expires_at": datetime.now(timezone.utc) + timedelta(seconds=300),
     }
 
     return RedirectResponse(
@@ -153,7 +165,7 @@ def _handle_auth_code(code: str, redirect_uri: str, code_verifier: str):
     if not entry:
         return _token_error("invalid_grant", "The authorization code is invalid or has expired")
 
-    if datetime.utcnow() > entry["expires_at"]:
+    if datetime.now(timezone.utc) > entry["expires_at"]:
         del store.auth_codes[code]
         return _token_error("invalid_grant", "The authorization code is invalid or has expired")
 
@@ -195,7 +207,7 @@ def _handle_refresh_token(refresh_token: str):
     if not entry:
         return _token_error("invalid_grant", "The refresh token is invalid or has expired")
 
-    if datetime.utcnow() > entry["expires_at"]:
+    if datetime.now(timezone.utc) > entry["expires_at"]:
         del store.refresh_tokens[refresh_token]
         return _token_error("invalid_grant", "The refresh token is invalid or has expired")
 
@@ -219,7 +231,6 @@ def _handle_refresh_token(refresh_token: str):
 
 
 def _token_error(error: str, description: str):
-    from fastapi.responses import JSONResponse
     return JSONResponse(
         status_code=400,
         content={"error": error, "error_description": description},

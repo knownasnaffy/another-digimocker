@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from config import settings
 
@@ -22,11 +22,11 @@ def issue_token_pair(persona_id: str) -> dict:
     refresh = generate_token()
     access_tokens[access] = {
         "persona_id": persona_id,
-        "expires_at": datetime.utcnow() + timedelta(seconds=settings.ACCESS_TOKEN_EXPIRES_IN),
+        "expires_at": datetime.now(timezone.utc) + timedelta(seconds=settings.ACCESS_TOKEN_EXPIRES_IN),
     }
     refresh_tokens[refresh] = {
         "persona_id": persona_id,
-        "expires_at": datetime.utcnow() + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRES_IN),
+        "expires_at": datetime.now(timezone.utc) + timedelta(seconds=settings.REFRESH_TOKEN_EXPIRES_IN),
     }
     return {
         "access_token": access,
@@ -41,7 +41,7 @@ def resolve_access_token(token: str) -> dict | None:
     entry = access_tokens.get(token)
     if not entry:
         return None
-    if datetime.utcnow() > entry["expires_at"]:
+    if datetime.now(timezone.utc) > entry["expires_at"]:
         del access_tokens[token]
         return None
     return entry
