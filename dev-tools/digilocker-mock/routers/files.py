@@ -203,6 +203,8 @@ async def pull_document(request: Request):
     doctype = body.get("doctype", "")
     parameters = body.get("parameters", [])
 
+    # The real DigiLocker API returns validUpto in IST (UTC+05:30).
+    # This mock always uses the fixed IST offset (+05:30) to match that behaviour.
     valid_until = (
         datetime.now(tz=timezone(timedelta(hours=5, minutes=30))) + timedelta(days=365)
     ).strftime("%Y-%m-%dT%H:%M:%S+05:30")

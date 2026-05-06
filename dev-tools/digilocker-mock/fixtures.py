@@ -1,10 +1,12 @@
 import json
+import logging
 import os
 import sys
 
 from config import settings
 
 _personas: dict[str, dict] = {}
+_log = logging.getLogger(__name__)
 
 
 def load_personas() -> None:
@@ -16,27 +18,27 @@ def load_personas() -> None:
         personas_path = os.path.join(base_dir, personas_path)
 
     if not os.path.exists(personas_path):
-        print(f"ERROR: personas file not found at {personas_path}", file=sys.stderr)
+        _log.critical("personas file not found at %s", personas_path)
         sys.exit(1)
 
     try:
         with open(personas_path, "r", encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError as exc:
-        print(f"ERROR: personas file is not valid JSON: {exc}", file=sys.stderr)
+        _log.critical("personas file is not valid JSON: %s", exc)
         sys.exit(1)
 
     if not isinstance(data, list):
-        print("ERROR: personas file must be a JSON array", file=sys.stderr)
+        _log.critical("personas file must be a JSON array")
         sys.exit(1)
 
     for persona in data:
         if "id" not in persona:
-            print("ERROR: each persona must have an 'id' field", file=sys.stderr)
+            _log.critical("each persona must have an 'id' field")
             sys.exit(1)
         _personas[persona["id"]] = persona
 
-    print(f"Loaded {len(_personas)} persona(s): {list(_personas.keys())}")
+    _log.info("Loaded %d persona(s): %s", len(_personas), list(_personas.keys()))
 
 
 def get_persona(persona_id: str) -> dict | None:

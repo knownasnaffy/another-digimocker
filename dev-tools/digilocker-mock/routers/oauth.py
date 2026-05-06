@@ -25,7 +25,13 @@ def _validate_redirect_uri(redirect_uri: str | None) -> bool:
 
 
 def _verify_client(client_id: str | None, client_secret: str | None, request: Request) -> bool:
-    """Check client credentials from Basic Auth or form params."""
+    """Verify client credentials from HTTP Basic Auth or form parameters.
+
+    HTTP Basic Auth takes priority over form parameters. Both are supported
+    for compatibility with clients that cannot set the Authorization header
+    (e.g. some form-based integrations). Credentials are compared against
+    ``settings.CLIENT_ID`` and ``settings.CLIENT_SECRET``.
+    """
     # Try HTTP Basic Auth first
     auth_header = request.headers.get("authorization", "")
     if auth_header.lower().startswith("basic "):
@@ -157,7 +163,7 @@ async def token(
     elif grant_type == "refresh_token":
         return _handle_refresh_token(refresh_token)
     else:
-        return _token_error("invalid_grant_type", f"Unsupported grant_type: {grant_type}")
+        return _token_error("unsupported_grant_type", f"Unsupported grant_type: {grant_type}")
 
 
 def _handle_auth_code(code: str, redirect_uri: str, code_verifier: str):
