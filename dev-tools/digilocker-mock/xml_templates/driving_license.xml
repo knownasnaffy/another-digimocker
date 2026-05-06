@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DrivingLicenseDetails>
+  <IssuedBy>{{ issuing_authority }}</IssuedBy>
+  <IssueDate>{{ issue_date }}</IssueDate>
+  <ExpiryDate>{{ expiry_date }}</ExpiryDate>
+  <DLNumber>{{ dl_number }}</DLNumber>
+  <State>{{ state }}</State>
+  <Name>{{ name }}</Name>
+  <DOB>{{ dob }}</DOB>
+  <Gender>{{ gender }}</Gender>
+  <VehicleClasses>
+    {% for vc in vehicle_classes %}
+    <VehicleClass>{{ vc }}</VehicleClass>
+    {% endfor %}
+  </VehicleClasses>
+  <Status>{{ status }}</Status>
+</DrivingLicenseDetails>

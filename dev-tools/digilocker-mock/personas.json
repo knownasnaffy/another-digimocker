@@ -1,0 +1,126 @@
+[
+  {
+    "id": "driver_full",
+    "label": "Driver — DL + 2 EV RCs",
+    "digilockerid": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa",
+    "name": "Harpreet Singh",
+    "dob": "15081990",
+    "gender": "M",
+    "eaadhaar": "Y",
+    "reference_key": "mock_ref_001",
+    "driving_license": {
+      "dl_number": "PB0320230012345",
+      "issue_date": "2023-03-15",
+      "expiry_date": "2043-03-14",
+      "issuing_authority": "DTO Ludhiana",
+      "state": "Punjab",
+      "vehicle_classes": ["LMV", "MCWG"],
+      "status": "valid"
+    },
+    "vehicles": [
+      {
+        "rc_number": "PB10AB1234",
+        "chassis_number": "MBLKC12EFBGJ08420",
+        "engine_number": "ENG00123456",
+        "owner_name": "Harpreet Singh",
+        "make": "Tata",
+        "model": "Nexon EV",
+        "fuel_type": "ELECTRIC",
+        "vehicle_class": "LMV",
+        "reg_date": "2023-01-10",
+        "fitness_upto": "2038-01-09",
+        "insurance_upto": "2025-01-09",
+        "connector_types": ["ccs2", "type2"]
+      },
+      {
+        "rc_number": "PB10CD5678",
+        "chassis_number": "MBLKC12EFBGJ09999",
+        "engine_number": "ENG00789012",
+        "owner_name": "Harpreet Singh",
+        "make": "Ather",
+        "model": "450X",
+        "fuel_type": "ELECTRIC",
+        "vehicle_class": "MCWG",
+        "reg_date": "2022-06-20",
+        "fitness_upto": "2037-06-19",
+        "insurance_upto": "2025-06-19",
+        "connector_types": ["bharat_ac"]
+      }
+    ]
+  },
+  {
+    "id": "driver_no_rc",
+    "label": "Driver — DL only, no RCs",
+    "digilockerid": "bbbbbbbb-0002-0002-0002-bbbbbbbbbbbb",
+    "name": "Meera Pillai",
+    "dob": "22041985",
+    "gender": "F",
+    "eaadhaar": "N",
+    "reference_key": "mock_ref_002",
+    "driving_license": {
+      "dl_number": "KL0520220054321",
+      "issue_date": "2022-05-10",
+      "expiry_date": "2042-05-09",
+      "issuing_authority": "DTO Thrissur",
+      "state": "Kerala",
+      "vehicle_classes": ["LMV"],
+      "status": "valid"
+    },
+    "vehicles": []
+  },
+  {
+    "id": "driver_dl_expired",
+    "label": "Driver — DL expired",
+    "digilockerid": "cccccccc-0003-0003-0003-cccccccccccc",
+    "name": "Ravi Kumar",
+    "dob": "09121978",
+    "gender": "M",
+    "eaadhaar": "Y",
+    "reference_key": "mock_ref_003",
+    "driving_license": {
+      "dl_number": "MH0220100098765",
+      "issue_date": "2010-02-01",
+      "expiry_date": "2020-01-31",
+      "issuing_authority": "DTO Mumbai",
+      "state": "Maharashtra",
+      "vehicle_classes": ["LMV"],
+      "status": "expired"
+    },
+    "vehicles": [
+      {
+        "rc_number": "MH02ZZ9900",
+        "chassis_number": "MBLKC12EFBGJ00001",
+        "engine_number": "ENG00000001",
+        "owner_name": "Ravi Kumar",
+        "make": "MG",
+        "model": "ZS EV",
+        "fuel_type": "ELECTRIC",
+        "vehicle_class": "LMV",
+        "reg_date": "2021-11-05",
+        "fitness_upto": "2036-11-04",
+        "insurance_upto": "2025-11-04",
+        "connector_types": ["ccs2", "type2"]
+      }
+    ]
+  },
+  {
+    "id": "host_only",
+    "label": "Host — DL only, no vehicles",
+    "digilockerid": "dddddddd-0004-0004-0004-dddddddddddd",
+    "name": "Sunita Reddy",
+    "dob": "30071982",
+    "gender": "F",
+    "eaadhaar": "Y",
+    "reference_key": "mock_ref_004",
+    "driving_license": {
+      "dl_number": "TS0920180067890",
+      "issue_date": "2018-09-12",
+      "expiry_date": "2038-09-11",
+      "issuing_authority": "DTO Hyderabad",
+      "state": "Telangana",
+      "vehicle_classes": ["LMV", "MCWG"],
+      "status": "valid"
+    },
+    "vehicles": []
+  }
+]

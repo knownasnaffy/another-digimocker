@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VehicleRegistrationDetails>
+  <RegNo>{{ rc_number }}</RegNo>
+  <ChassisNo>{{ chassis_number }}</ChassisNo>
+  <EngineNo>{{ engine_number }}</EngineNo>
+  <OwnerName>{{ owner_name }}</OwnerName>
+  <Make>{{ make }}</Make>
+  <Model>{{ model }}</Model>
+  <FuelType>{{ fuel_type }}</FuelType>
+  <VehicleClass>{{ vehicle_class }}</VehicleClass>
+  <RegDate>{{ reg_date }}</RegDate>
+  <FitnessUpto>{{ fitness_upto }}</FitnessUpto>
+  <InsuranceUpto>{{ insurance_upto }}</InsuranceUpto>
+  <ConnectorTypes>
+    {% for ct in connector_types %}
+    <ConnectorType>{{ ct }}</ConnectorType>
+    {% endfor %}
+  </ConnectorTypes>
+</VehicleRegistrationDetails>
