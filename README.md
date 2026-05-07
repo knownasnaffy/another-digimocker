@@ -1,4 +1,3 @@
-
 # DigiLocker Mock Server
 
 A standalone FastAPI application that faithfully mimics the [DigiLocker Authorized Partner API (v1.11)](https://partners.digitallocker.gov.in/assets/img/Digital%20Locker%20Authorized%20Partner%20API%20Specification.pdf) for local development and CI environments.
@@ -24,8 +23,6 @@ Any application that points `DIGILOCKER_BASE_URL` at this mock instead of `https
 Requires Python 3.12+.
 
 ```bash
-cd dev-tools/digilocker-mock
-
 # Install dependencies
 pip install -r requirements.txt
 
@@ -38,8 +35,6 @@ The server will be available at `http://localhost:8001`.
 ### Running with Docker
 
 ```bash
-cd dev-tools/digilocker-mock
-
 # Build the image
 docker build -t digilocker-mock .
 
@@ -62,8 +57,6 @@ docker run --rm -p 8001:8001 \
 The image is fully compatible with Podman — no changes needed.
 
 ```bash
-cd dev-tools/digilocker-mock
-
 # Build the image
 podman build -t digilocker-mock .
 
@@ -100,7 +93,7 @@ Add the following service to your `docker-compose.yml`:
 ```yaml
 services:
   digilocker-mock:
-    build: ./dev-tools/digilocker-mock
+    build: ./dev-tools/digilocker-mock # or wherever you wanna place this
     ports:
       - "8001:8001"
     environment:
