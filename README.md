@@ -1,19 +1,21 @@
+
 # DigiLocker Mock Server
 
 A standalone FastAPI application that faithfully mimics the [DigiLocker Authorized Partner API (v1.11)](https://partners.digitallocker.gov.in/assets/img/Digital%20Locker%20Authorized%20Partner%20API%20Specification.pdf) for local development and CI environments.
 
-Any backend service that points `DIGILOCKER_BASE_URL` at this mock instead of `https://api.digitallocker.gov.in` will behave identically — **no code changes needed to switch between environments**.
+Any application that points `DIGILOCKER_BASE_URL` at this mock instead of `https://api.digitallocker.gov.in` will behave identically — **no code changes needed to switch between environments**.
 
 ## Contents
 
-- [Quick Start](#quick-start)
-  - [Running directly with Python](#running-directly-with-python)
-  - [Running with Docker](#running-with-docker)
-  - [Running with Podman](#running-with-podman)
-  - [Running as part of Docker Compose](#running-as-part-of-docker-compose)
-- [Configuration](#configuration)
-- [Test Personas](#test-personas)
-- [Using in Automated Tests](#using-in-automated-tests)
+* [Quick Start](#quick-start)
+
+  * [Running directly with Python](#running-directly-with-python)
+  * [Running with Docker](#running-with-docker)
+  * [Running with Podman](#running-with-podman)
+  * [Running as part of Docker Compose](#running-as-part-of-docker-compose)
+* [Configuration](#configuration)
+* [Test Personas](#test-personas)
+* [Using in Automated Tests](#using-in-automated-tests)
 
 ## Quick Start
 
@@ -112,7 +114,7 @@ services:
       retries: 5
 ```
 
-Then configure your EV backend's `.env` for development:
+Then configure your application's `.env` for development:
 
 ```dotenv
 DIGILOCKER_BASE_URL=http://digilocker-mock:8001
@@ -127,16 +129,16 @@ In staging/production, set `DIGILOCKER_BASE_URL=https://api.digitallocker.gov.in
 
 All configuration is through environment variables (or a `.env` file in the same directory).
 
-| Variable | Default | Description |
-|---|---|---|
-| `PORT` | `8001` | Port the server listens on |
-| `HOST` | `0.0.0.0` | Host/interface to bind |
-| `CLIENT_ID` | `mock_client_id` | OAuth client ID — must match what the backend sends |
-| `CLIENT_SECRET` | `mock_client_secret` | OAuth client secret — must match what the backend sends |
-| `ENFORCE_PKCE` | `true` | When `true`, requires `code_challenge`/`code_verifier` in the OAuth flow. Set to `false` for quick manual testing |
-| `ACCESS_TOKEN_EXPIRES_IN` | `3600` | Access token lifetime in seconds |
-| `REFRESH_TOKEN_EXPIRES_IN` | `86400` | Refresh token lifetime in seconds |
-| `PERSONAS_FILE` | `personas.json` | Path to the personas file (absolute or relative to the app directory) |
+| Variable                   | Default              | Description                                                                                                       |
+| -------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `PORT`                     | `8001`               | Port the server listens on                                                                                        |
+| `HOST`                     | `0.0.0.0`            | Host/interface to bind                                                                                            |
+| `CLIENT_ID`                | `mock_client_id`     | OAuth client ID — must match what the backend sends                                                               |
+| `CLIENT_SECRET`            | `mock_client_secret` | OAuth client secret — must match what the backend sends                                                           |
+| `ENFORCE_PKCE`             | `true`               | When `true`, requires `code_challenge`/`code_verifier` in the OAuth flow. Set to `false` for quick manual testing |
+| `ACCESS_TOKEN_EXPIRES_IN`  | `3600`               | Access token lifetime in seconds                                                                                  |
+| `REFRESH_TOKEN_EXPIRES_IN` | `86400`              | Refresh token lifetime in seconds                                                                                 |
+| `PERSONAS_FILE`            | `personas.json`      | Path to the personas file (absolute or relative to the app directory)                                             |
 
 Example `.env` file for local development with PKCE disabled:
 
@@ -150,12 +152,12 @@ ENFORCE_PKCE=false
 
 Personas are defined in `personas.json`. Each persona is a complete test identity with a driving licence and zero or more vehicle registrations.
 
-| Persona ID | Label | DL Status | Vehicles |
-|---|---|---|---|
-| `driver_full` | Driver — DL + 2 EV RCs | Valid | 2 (Tata Nexon EV, Ather 450X) |
-| `driver_no_rc` | Driver — DL only, no RCs | Valid | 0 |
-| `driver_dl_expired` | Driver — DL expired | **Expired** | 1 (MG ZS EV) |
-| `host_only` | Host — DL only, no vehicles | Valid | 0 |
+| Persona ID          | Label                       | DL Status   | Vehicles                      |
+| ------------------- | --------------------------- | ----------- | ----------------------------- |
+| `driver_full`       | Driver — DL + 2 vehicle RCs | Valid       | 2 (Tata Nexon EV, Ather 450X) |
+| `driver_no_rc`      | Driver — DL only, no RCs    | Valid       | 0                             |
+| `driver_dl_expired` | Driver — DL expired         | **Expired** | 1 (MG ZS EV)                  |
+| `host_only`         | Host — DL only, no vehicles | Valid       | 0                             |
 
 ### Adding a new persona
 
