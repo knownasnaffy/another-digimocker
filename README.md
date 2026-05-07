@@ -4,8 +4,6 @@ A standalone FastAPI application that faithfully mimics the [DigiLocker Authoriz
 
 Any backend service that points `DIGILOCKER_BASE_URL` at this mock instead of `https://api.digitallocker.gov.in` will behave identically — **no code changes needed to switch between environments**.
 
----
-
 ## Contents
 
 - [Quick Start](#quick-start)
@@ -15,11 +13,7 @@ Any backend service that points `DIGILOCKER_BASE_URL` at this mock instead of `h
   - [Running as part of Docker Compose](#running-as-part-of-docker-compose)
 - [Configuration](#configuration)
 - [Test Personas](#test-personas)
-- [Mock Control Endpoints](#mock-control-endpoints)
 - [Using in Automated Tests](#using-in-automated-tests)
-- [Project Structure](#project-structure)
-
----
 
 ## Quick Start
 
@@ -129,8 +123,6 @@ DIGILOCKER_REDIRECT_URI=http://localhost:8000/v1/onboarding/digilocker/callback
 
 In staging/production, set `DIGILOCKER_BASE_URL=https://api.digitallocker.gov.in`. No other code changes are required.
 
----
-
 ## Configuration
 
 All configuration is through environment variables (or a `.env` file in the same directory).
@@ -153,8 +145,6 @@ CLIENT_ID=mock_client_id
 CLIENT_SECRET=mock_client_secret
 ENFORCE_PKCE=false
 ```
-
----
 
 ## Test Personas
 
@@ -194,52 +184,6 @@ Edit `personas.json` and add an entry following the existing schema. No code cha
 }
 ```
 
----
-
-## Mock Control Endpoints
-
-These endpoints do not exist in the real DigiLocker API. They are prefixed with `/mock/` and are only for automated tests and local development.
-
-### `GET /mock/health`
-
-Returns `200 {"status": "ok"}`. Used by Docker/Podman Compose health checks and CI pipelines to wait until the server is ready.
-
-```bash
-curl http://localhost:8001/mock/health
-# {"status":"ok"}
-```
-
-### `GET /mock/personas`
-
-Returns all loaded personas with their `id` and `label`.
-
-```bash
-curl http://localhost:8001/mock/personas
-```
-
-### `POST /mock/token/direct`
-
-Issues an access/refresh token pair for a given `persona_id` **without going through the OAuth consent flow**. Use this in automated tests to skip the browser-based UI.
-
-```bash
-curl -s -X POST http://localhost:8001/mock/token/direct \
-  -H "Content-Type: application/json" \
-  -d '{"persona_id": "driver_full"}'
-```
-
-Response shape is identical to the `POST /public/oauth2/1/token` response.
-
-### `POST /mock/reset`
-
-Clears all in-memory state (auth codes, access tokens, refresh tokens). Call this in test `teardown` to ensure a clean slate between test cases.
-
-```bash
-curl -s -X POST http://localhost:8001/mock/reset
-# {"message":"State cleared"}
-```
-
----
-
 ## Using in Automated Tests
 
 The typical pattern for an automated integration test:
@@ -265,30 +209,4 @@ def test_user_details():
     ).json()
 
     assert user["name"] == "Harpreet Singh"
-```
-
----
-
-## Project Structure
-
-```
-digilocker-mock/
-├── main.py              # FastAPI app, router registration, /mock/* endpoints
-├── config.py            # Settings (pydantic-settings, reads env vars / .env)
-├── store.py             # In-memory state: auth codes, access/refresh tokens
-├── fixtures.py          # Persona loader (reads personas.json at startup)
-├── personas.json        # Editable test user definitions
-├── routers/
-│   ├── oauth.py         # /authorize, /token, /revoke
-│   ├── user.py          # /public/oauth2/1/user
-│   └── files.py         # /files/issued, /xml/files, /pulldocument
-├── templates/
-│   └── consent.html     # HTML consent/login UI served at /authorize
-├── xml_templates/
-│   ├── driving_license.xml   # DL XML (Jinja2)
-│   └── vehicle_rc.xml        # RC XML (Jinja2) — includes mock-only <ConnectorTypes>
-├── Dockerfile
-├── requirements.txt
-├── README.md            # This file
-└── FEATURES.md          # Implemented vs skipped DigiLocker API routes
 ```
